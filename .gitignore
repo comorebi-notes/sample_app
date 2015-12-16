@@ -15,4 +15,9 @@
 /log/*
 !/log/.keep
 /tmp
+
+# Ignore local rails
 /vendor/bundle
+
+# Ignore Spring files.
+/spring/*.pid
