@@ -14,9 +14,27 @@ class UsersProfileTest < ActionDispatch::IntegrationTest
     assert_select 'h1', text: @user.name
     assert_select 'h1>img.gravatar'
     assert_match @user.microposts.count.to_s, response.body
+    assert_match @user.following.count.to_s,  response.body
+    assert_match @user.followers.count.to_s,  response.body
     assert_select 'div.pagination'
     @user.microposts.paginate(page: 1).each do |micropost|
-      assert_match micropost.content, response.body
+      assert_match CGI.escapeHTML(micropost.content), response.body
+    end
+  end
+
+  test "home display" do
+    log_in_as(@user)
+    get root_path
+    assert_template 'static_pages/home'
+    assert_select 'title', full_title
+    assert_select 'h1', text: @user.name
+    assert_select 'img.gravatar'
+    assert_match @user.microposts.count.to_s, response.body
+    assert_match @user.following.count.to_s,  response.body
+    assert_match @user.followers.count.to_s,  response.body
+    assert_select 'div.pagination'
+    @user.feed.paginate(page: 1).each do |micropost|
+      assert_match CGI.escapeHTML(micropost.content), response.body
     end
   end
 end
